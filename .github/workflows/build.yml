@@ -1,0 +1,46 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y git build-essential libssl-dev libffi-dev python3-dev python3-pip python3-venv
+        sudo apt install -y openjdk-11-jdk
+        sudo apt install -y unzip zip
+        sudo apt install -y libgl1-mesa-glx
+
+    - name: Install Buildozer
+      run: |
+        pip install --upgrade pip
+        pip install buildozer
+
+    - name: Initialize Buildozer
+      run: buildozer init
+
+    - name: Build APK
+      run: buildozer -v android debug
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dianjiapp-apk
+        path: ./bin/*.apk
