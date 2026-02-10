@@ -1,0 +1,19 @@
+# Build files
+.buildozer/
+bin/
+.gradle/
+
+# Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE files
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
