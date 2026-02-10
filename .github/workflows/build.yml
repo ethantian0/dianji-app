@@ -3,44 +3,42 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04  # 使用更稳定的Ubuntu版本
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4  # 更新到v4版本
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5  # 更新到v5版本
       with:
         python-version: '3.9'
+        cache: 'pip'
 
     - name: Install system dependencies
       run: |
-        sudo apt update
+        sudo apt update -y
         sudo apt install -y git build-essential libssl-dev libffi-dev python3-dev python3-pip python3-venv
         sudo apt install -y openjdk-11-jdk
-        sudo apt install -y unzip zip
-        sudo apt install -y libgl1-mesa-glx
+        sudo apt install -y unzip zip wget curl
+        sudo apt install -y libgl1-mesa-glx libx11-xcb1
 
     - name: Install Buildozer
       run: |
-        pip install --upgrade pip
+        pip install --upgrade pip setuptools wheel
         pip install buildozer
 
-    - name: Initialize Buildozer
-      run: buildozer init
-
     - name: Build APK
-      run: buildozer -v android debug
+      run: |
+        buildozer init
+        buildozer -v android debug
 
     - name: Upload APK artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  # 更新到v4版本
       with:
         name: dianjiapp-apk
         path: ./bin/*.apk
